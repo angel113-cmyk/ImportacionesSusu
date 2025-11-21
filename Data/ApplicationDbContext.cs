@@ -21,6 +21,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Cliente> Clientes { get; set; }
 
+    public DbSet<Venta> Ventas { get; set; }
+    public DbSet<DetalleVenta> DetalleVentas { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Línea crítica para la generación de IDs en PostgreSQL (simula IDENTITY).

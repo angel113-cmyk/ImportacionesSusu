@@ -1,0 +1,116 @@
+@model IEnumerable<Venta>
+
+@{
+    ViewData["Title"] = "Gestión de Ventas";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-cart-check me-2 text-success"></i>Gestión de Ventas
+            </h1>
+            <p class="text-muted">Historial de ventas realizadas</p>
+        </div>
+        <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Nueva Venta
+        </a>
+    </div>
+
+    <!-- Tarjeta de ventas -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="mb-0 fw-semibold text-dark">
+                <i class="bi bi-list-ul me-2 text-success"></i>Historial de Ventas
+            </h5>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="ps-4 fw-semibold">ID Venta</th>
+                            <th class="fw-semibold">Cliente</th>
+                            <th class="fw-semibold text-center">Fecha</th>
+                            <th class="fw-semibold text-end">Total</th>
+                            <th class="fw-semibold text-center">Estado</th>
+                            <th class="fw-semibold text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var venta in Model)
+                        {
+                            <tr class="border-bottom">
+                                <td class="ps-4">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-medium">#@venta.Id</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 40px; height: 40px;">
+                                            <i class="bi bi-person text-info"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@venta.Cliente.Nombre</div>
+                                            <small class="text-muted">@venta.Cliente.NumeroCliente</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-dark">@venta.FechaVenta.ToString("dd/MM/yyyy")</span>
+                                    <br>
+                                    <small class="text-muted">@venta.FechaVenta.ToString("HH:mm")</small>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-5">@venta.Total.ToString("C")</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success bg-opacity-10 text-success">
+                                        <i class="bi bi-check-circle me-1"></i>@venta.Estado
+                                    </span>
+                                </td>
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Details" asp-route-id="@venta.Id" 
+                                           class="btn btn-sm btn-outline-info rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@venta.Id" 
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Eliminar venta">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer de la tabla -->
+        <div class="card-footer bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>Mostrando <strong>@Model.Count()</strong> ventas
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+}

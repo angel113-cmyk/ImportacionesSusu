@@ -1,0 +1,149 @@
+@model Venta
+
+@{
+    ViewData["Title"] = "Detalles de Venta";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-receipt me-2 text-info"></i>Detalles de Venta
+            </h1>
+            <p class="text-muted">Información completa de la venta #@Model.Id</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Volver a Ventas
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Información de la Venta -->
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-header bg-info bg-gradient text-white py-3 rounded-top-3">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="bi bi-cart-check me-2"></i>Factura #@Model.Id
+                    </h5>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Información del Cliente -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-semibold text-muted mb-2">
+                                <i class="bi bi-person me-1"></i>Información del Cliente
+                            </h6>
+                            <div class="bg-light rounded-2 p-3">
+                                <div class="fw-bold text-dark">@Model.Cliente.Nombre</div>
+                                <div class="text-muted small">N°: @Model.Cliente.NumeroCliente</div>
+                                @if (!string.IsNullOrEmpty(Model.Cliente.Telefono))
+                                {
+                                    <div class="text-muted small">Tel: @Model.Cliente.Telefono</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-semibold text-muted mb-2">
+                                <i class="bi bi-calendar me-1"></i>Información de la Venta
+                            </h6>
+                            <div class="bg-light rounded-2 p-3">
+                                <div class="text-muted small">Fecha: @Model.FechaVenta.ToString("dd/MM/yyyy")</div>
+                                <div class="text-muted small">Hora: @Model.FechaVenta.ToString("HH:mm")</div>
+                                <div class="text-muted small">Estado: <span class="badge bg-success">@Model.Estado</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de Productos -->
+                    <h6 class="fw-semibold text-muted mb-3">
+                        <i class="bi bi-list-check me-1"></i>Productos Vendidos
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unitario</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detalle in Model.Detalles)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-medium">@detalle.Producto.Nombre</div>
+                                            <small class="text-muted">Código: @detalle.Producto.Codigo</small>
+                                        </td>
+                                        <td class="text-center">@detalle.Cantidad</td>
+                                        <td class="text-end">@detalle.PrecioUnitario.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@detalle.Subtotal.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="bg-light">
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+                                    <td class="text-end fw-bold fs-5 text-success">@Model.Total.ToString("C")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success bg-gradient text-white py-3 rounded-top-3">
+                    <h5 class="card-title mb-0 fw-semibold text-center">
+                        <i class="bi bi-currency-dollar me-2"></i>Resumen
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <div class="text-muted small">Total de la Venta</div>
+                        <h2 class="fw-bold text-success">@Model.Total.ToString("C")</h2>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-muted small">Productos Vendidos</div>
+                        <h4 class="fw-bold text-primary">@Model.Detalles.Sum(d => d.Cantidad)</h4>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-muted small">Items Diferentes</div>
+                        <h4 class="fw-bold text-info">@Model.Detalles.Count</h4>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Volver a Ventas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .table th {
+            border: none;
+            font-weight: 600;
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #198754, #20c997) !important;
+        }
+    </style>
+}

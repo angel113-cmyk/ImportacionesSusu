@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImportacionesSusu")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f19a266dce07040a26e34e85fac29468d748ca79")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58f98f869b3db2d32d69f45830d80df4ee7c9123")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImportacionesSusu")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImportacionesSusu")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

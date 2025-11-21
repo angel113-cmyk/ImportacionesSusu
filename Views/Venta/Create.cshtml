@@ -1,0 +1,360 @@
+@model VentaViewModel
+
+@{
+    ViewData["Title"] = "Nueva Venta";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-cart-plus me-2 text-success"></i>Nueva Venta
+            </h1>
+            <p class="text-muted">Registra una nueva venta en el sistema</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Volver a Ventas
+        </a>
+    </div>
+
+    <!-- Formulario de Venta -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-success bg-gradient text-white py-3 rounded-top-3">
+            <h5 class="card-title mb-0 fw-semibold">
+                <i class="bi bi-cart-check me-2"></i>Registrar Venta
+            </h5>
+        </div>
+        
+        <div class="card-body p-4">
+            <form asp-action="Create" id="ventaForm" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <!-- Selección de Cliente -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark mb-2">
+                            <i class="bi bi-person me-2 text-primary"></i>Seleccionar Cliente
+                        </label>
+                        <select asp-for="ClienteId" class="form-select form-select-lg" required>
+                            <option value="">-- Selecciona un cliente --</option>
+                            @foreach (var cliente in ViewBag.Clientes)
+                            {
+                                <option value="@cliente.Id">@cliente.Nombre - @cliente.NumeroCliente</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ClienteId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Agregar Productos -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-semibold text-dark mb-0">
+                                <i class="bi bi-box-seam me-2 text-primary"></i>Productos de la Venta
+                            </h5>
+                            <button type="button" class="btn btn-primary btn-sm" id="agregarProducto">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Producto
+                            </button>
+                        </div>
+                        
+                        <!-- Lista de Productos -->
+                        <div id="productosContainer">
+                            <!-- Los productos se agregarán aquí dinámicamente -->
+                        </div>
+
+                        <!-- Total General -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-success bg-opacity-10 border-0 rounded-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h5 class="fw-bold text-success mb-0">Total General</h5>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <h3 class="fw-bold text-success mb-0" id="totalGeneral">$0.00</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAMPO OCULTO PARA EL TOTAL -->
+                <input type="hidden" asp-for="TotalGeneral" id="totalGeneralHidden" />
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="form-group mt-4 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold" id="btnProcesarVenta">
+                            <i class="bi bi-check-circle me-2"></i>Procesar Venta
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .producto-item {
+            border: 2px solid #e3f2fd !important;
+            border-radius: 10px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #198754, #20c997);
+            border: none;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        let productoIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            agregarProducto();
+            document.getElementById('agregarProducto').addEventListener('click', agregarProducto);
+            
+            // PREVENIR el envío normal del formulario
+            document.getElementById('ventaForm').addEventListener('submit', procesarVenta);
+        });
+
+        // Eventos delegados
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('quitar-producto')) {
+                e.target.closest('.producto-item').remove();
+                calcularTotalGeneral();
+            }
+        });
+
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('producto-select')) {
+                actualizarProducto(e.target);
+            }
+        });
+
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('cantidad-input')) {
+                actualizarProducto(e.target);
+            }
+        });
+
+        function agregarProducto() {
+            const container = document.getElementById('productosContainer');
+            const productoDiv = document.createElement('div');
+            productoDiv.className = 'card producto-item mb-3 border-primary';
+            productoDiv.innerHTML = `
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <select class="form-select producto-select" required>
+                                <option value="">-- Selecciona producto --</option>
+                                @foreach (var producto in ViewBag.Productos)
+                                {
+                                    <option value="@producto.Id" data-precio="@producto.PrecioVenta" data-stock="@producto.Stock">
+                                        @producto.Nombre - Stock: @producto.Stock - $@producto.PrecioVenta
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control cantidad-input" value="1" min="1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control precio-input" step="0.01" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="fw-bold text-success subtotal">$0.00</span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm quitar-producto">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted stock-info"></small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(productoDiv);
+            productoIndex++;
+        }
+
+        function actualizarProducto(element) {
+            const card = element.closest('.producto-item');
+            const select = card.querySelector('.producto-select');
+            const cantidadInput = card.querySelector('.cantidad-input');
+            const precioInput = card.querySelector('.precio-input');
+            const subtotalSpan = card.querySelector('.subtotal');
+            const stockInfo = card.querySelector('.stock-info');
+
+            const productoId = select.value;
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            const precio = parseFloat(select.selectedOptions[0]?.dataset.precio) || 0;
+            const stock = parseInt(select.selectedOptions[0]?.dataset.stock) || 0;
+
+            precioInput.value = precio.toFixed(2);
+            
+            const subtotal = cantidad * precio;
+            subtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
+
+            if (productoId && cantidad > 0) {
+                if (cantidad > stock) {
+                    stockInfo.textContent = `⚠️ Stock insuficiente. Disponible: ${stock}`;
+                    stockInfo.className = 'text-danger';
+                } else {
+                    stockInfo.textContent = `Stock disponible: ${stock}`;
+                    stockInfo.className = 'text-success';
+                }
+            } else {
+                stockInfo.textContent = '';
+            }
+
+            calcularTotalGeneral();
+        }
+
+        function calcularTotalGeneral() {
+            let total = 0;
+            document.querySelectorAll('.producto-item').forEach(card => {
+                const subtotalText = card.querySelector('.subtotal').textContent;
+                const subtotal = parseFloat(subtotalText.replace('$', '')) || 0;
+                total += subtotal;
+            });
+            document.getElementById('totalGeneral').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('totalGeneralHidden').value = total.toFixed(2);
+        }
+
+        // FUNCIÓN PRINCIPAL - Procesar la venta manualmente
+        function procesarVenta(e) {
+            e.preventDefault(); // IMPORTANTE: Prevenir recarga
+            
+            const productos = document.querySelectorAll('.producto-item');
+            if (productos.length === 0) {
+                alert('Debes agregar al menos un producto a la venta.');
+                return;
+            }
+
+            // Validar productos
+            let hayErrores = false;
+            const detalles = [];
+
+            productos.forEach(card => {
+                const select = card.querySelector('.producto-select');
+                const cantidadInput = card.querySelector('.cantidad-input');
+                const precioInput = card.querySelector('.precio-input');
+                
+                const productoId = select.value;
+                const cantidad = parseInt(cantidadInput.value) || 0;
+                const precio = parseFloat(precioInput.value) || 0;
+                const stock = parseInt(select.selectedOptions[0]?.dataset.stock) || 0;
+
+                if (!productoId || cantidad <= 0 || precio <= 0) {
+                    hayErrores = true;
+                    select.classList.add('is-invalid');
+                    cantidadInput.classList.add('is-invalid');
+                }
+
+                if (cantidad > stock) {
+                    hayErrores = true;
+                    cantidadInput.classList.add('is-invalid');
+                    alert(`Stock insuficiente para el producto seleccionado. Stock disponible: ${stock}`);
+                }
+
+                if (!hayErrores) {
+                    detalles.push({
+                        ProductoId: parseInt(productoId),
+                        Cantidad: cantidad,
+                        PrecioUnitario: precio,
+                        Subtotal: cantidad * precio
+                    });
+                }
+            });
+
+            if (hayErrores) {
+                alert('Por favor, corrige los errores en los productos.');
+                return;
+            }
+
+            // Obtener datos del formulario
+            const formData = new FormData();
+            formData.append('ClienteId', document.querySelector('[name="ClienteId"]').value);
+            formData.append('TotalGeneral', document.getElementById('totalGeneralHidden').value);
+            
+            // Agregar detalles
+            detalles.forEach((detalle, index) => {
+                formData.append(`Detalles[${index}].ProductoId`, detalle.ProductoId);
+                formData.append(`Detalles[${index}].Cantidad`, detalle.Cantidad);
+                formData.append(`Detalles[${index}].PrecioUnitario`, detalle.PrecioUnitario);
+                formData.append(`Detalles[${index}].Subtotal`, detalle.Subtotal);
+            });
+
+            // Mostrar loading
+            const btnSubmit = document.getElementById('btnProcesarVenta');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Procesando...';
+            btnSubmit.disabled = true;
+
+            // Enviar via Fetch API
+            fetch('/Venta/Create', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Éxito - redirigir a detalles de venta
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Error en el servidor: ' + response.status);
+                }
+            })
+            .then(html => {
+                if (html) {
+                    // Mostrar errores de validación
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const errors = doc.querySelector('.validation-summary-errors');
+                    if (errors) {
+                        alert('Error: ' + errors.textContent);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la venta: ' + error.message);
+            })
+            .finally(() => {
+                // Restaurar botón
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            });
+        }
+    </script>
+}
