@@ -194,3 +194,4 @@ C:\Users\User\Downloads\ImportacionesSusu\obj\Debug\net9.0\refint\ImportacionesS
 C:\Users\User\Downloads\ImportacionesSusu\obj\Debug\net9.0\ImportacionesSusu.pdb
 C:\Users\User\Downloads\ImportacionesSusu\obj\Debug\net9.0\ImportacionesSusu.genruntimeconfig.cache
 C:\Users\User\Downloads\ImportacionesSusu\obj\Debug\net9.0\ref\ImportacionesSusu.dll
+C:\Users\User\Downloads\ImportacionesSusu\obj\Debug\net9.0\ImportacionesSusu.sourcelink.json

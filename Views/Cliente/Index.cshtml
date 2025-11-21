@@ -1,0 +1,142 @@
+@model IEnumerable<Cliente>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-people me-2 text-primary"></i>Gestión de Clientes
+            </h1>
+            <p class="text-muted">Administra tu base de datos de clientes</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportarCSV" class="btn btn-success btn-lg">
+                <i class="bi bi-download me-2"></i>Exportar CSV
+            </a>
+            <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-person-plus me-2"></i>Nuevo Cliente
+            </a>
+        </div>
+    </div>
+
+    <!-- Tarjeta de clientes -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-white py-3 border-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <i class="bi bi-list-ul me-2 text-primary"></i>Lista de Clientes
+                    </h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <form asp-action="Index" method="get" class="d-flex">
+                        <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <input type="text" class="form-control border-end-0" name="searchString" 
+                                   placeholder="Buscar cliente..." value="@ViewData["CurrentFilter"]">
+                            <button class="btn btn-outline-secondary border-start-0" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="ps-4 fw-semibold">N° Cliente</th>
+                            <th class="fw-semibold">Nombre</th>
+                            <th class="fw-semibold">Teléfono</th>
+                            <th class="fw-semibold text-center">Fecha Registro</th>
+                            <th class="fw-semibold text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-bottom">
+                                <td class="ps-4">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary fw-medium">@item.NumeroCliente</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 40px; height: 40px;">
+                                            <i class="bi bi-person text-info"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@item.Nombre</div>
+                                            <small class="text-muted">ID: @item.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Telefono))
+                                    {
+                                        <span class="fw-medium text-dark">@item.Telefono</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sin teléfono</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                                        @item.FechaRegistro.ToString("dd/MM/yyyy")
+                                    </span>
+                                </td>
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Editar cliente">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-info rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Eliminar cliente">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer de la tabla -->
+        <div class="card-footer bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>Mostrando <strong>@Model.Count()</strong> clientes
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+}

@@ -1,0 +1,152 @@
+@model Cliente
+
+@{
+    ViewData["Title"] = "Nuevo Cliente";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-person-plus me-2 text-success"></i>Nuevo Cliente
+            </h1>
+            <p class="text-muted">Agrega un nuevo cliente a tu base de datos</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Volver a la Lista
+        </a>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success bg-gradient text-white py-3 rounded-top-3">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="bi bi-person-badge me-2"></i>Información del Cliente
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- Número de Cliente -->
+                        <div class="form-group mb-4">
+                            <label asp-for="NumeroCliente" class="form-label fw-semibold text-dark mb-2">
+                                <i class="bi bi-tag me-2 text-primary"></i>Número de Cliente
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-hash text-muted"></i>
+                                </span>
+                                <input asp-for="NumeroCliente" 
+                                       class="form-control border-start-0 ps-2" 
+                                       placeholder="Ej: CLI-001"
+                                       required />
+                            </div>
+                            <span asp-validation-for="NumeroCliente" class="text-danger small mt-1 d-block"></span>
+                            <small class="form-text text-muted">Identificador único del cliente</small>
+                        </div>
+
+                        <!-- Nombre -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Nombre" class="form-label fw-semibold text-dark mb-2">
+                                <i class="bi bi-person me-2 text-primary"></i>Nombre Completo
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-card-text text-muted"></i>
+                                </span>
+                                <input asp-for="Nombre" 
+                                       class="form-control border-start-0 ps-2" 
+                                       placeholder="Ingresa el nombre completo"
+                                       required />
+                            </div>
+                            <span asp-validation-for="Nombre" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Telefono" class="form-label fw-semibold text-dark mb-2">
+                                <i class="bi bi-telephone me-2 text-primary"></i>Teléfono
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-phone text-muted"></i>
+                                </span>
+                                <input asp-for="Telefono" 
+                                       class="form-control border-start-0 ps-2" 
+                                       placeholder="Ej: +51 123 456 789" />
+                            </div>
+                            <span asp-validation-for="Telefono" class="text-danger small mt-1 d-block"></span>
+                            <small class="form-text text-muted">Opcional - Número de contacto</small>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="form-group mt-4 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold">
+                                    <i class="bi bi-check-circle me-2"></i>Crear Cliente
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #198754, #20c997);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Validación en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.needs-validation');
+            
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    </script>
+}
