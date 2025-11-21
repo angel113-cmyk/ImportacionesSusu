@@ -1,0 +1,289 @@
+@model Producto
+
+@{
+    ViewData["Title"] = "Nuevo Producto";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-plus-circle me-2 text-success"></i>Crear Nuevo Producto
+            </h1>
+            <p class="text-muted">Agrega un nuevo producto a tu inventario de importaciones</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Volver a la Lista
+        </a>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success bg-gradient text-white py-3 rounded-top-3">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="bi bi-box-seam me-2"></i>Información del Producto
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <!-- Columna Izquierda -->
+                            <div class="col-md-6">
+                                <!-- Código del Producto -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="Codigo" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-upc-scan me-2 text-primary"></i>Código del Producto
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-tag text-muted"></i>
+                                        </span>
+                                        <input asp-for="Codigo" 
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="Ej: PROD-001"
+                                               required />
+                                    </div>
+                                    <span asp-validation-for="Codigo" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <!-- Nombre del Producto -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="Nombre" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-card-text me-2 text-primary"></i>Nombre del Producto
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-box text-muted"></i>
+                                        </span>
+                                        <input asp-for="Nombre" 
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="Ingresa el nombre del producto"
+                                               required />
+                                    </div>
+                                    <span asp-validation-for="Nombre" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <!-- Stock -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="Stock" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-boxes me-2 text-primary"></i>Stock Inicial
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-123 text-muted"></i>
+                                        </span>
+                                        <input asp-for="Stock" 
+                                               type="number"
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="0"
+                                               min="0"
+                                               required />
+                                    </div>
+                                    <span asp-validation-for="Stock" class="text-danger small mt-1 d-block"></span>
+                                    <small class="form-text text-muted">Cantidad disponible en inventario</small>
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha -->
+                            <div class="col-md-6">
+                                <!-- Precio de Compra -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="PrecioCompra" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-currency-dollar me-2 text-success"></i>Precio de Compra
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-arrow-down-left text-muted"></i>
+                                        </span>
+                                        <input asp-for="PrecioCompra" 
+                                               type="number"
+                                               step="0.01"
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="0.00"
+                                               min="0"
+                                               required />
+                                        <span class="input-group-text bg-light border-start-0">$</span>
+                                    </div>
+                                    <span asp-validation-for="PrecioCompra" class="text-danger small mt-1 d-block"></span>
+                                    <small class="form-text text-muted">Costo de importación</small>
+                                </div>
+
+                                <!-- Precio de Venta -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="PrecioVenta" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-currency-dollar me-2 text-primary"></i>Precio de Venta
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-arrow-up-right text-muted"></i>
+                                        </span>
+                                        <input asp-for="PrecioVenta" 
+                                               type="number"
+                                               step="0.01"
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="0.00"
+                                               min="0"
+                                               required />
+                                        <span class="input-group-text bg-light border-start-0">$</span>
+                                    </div>
+                                    <span asp-validation-for="PrecioVenta" class="text-danger small mt-1 d-block"></span>
+                                    <small class="form-text text-muted">Precio al público</small>
+                                </div>
+
+                                <!-- Imagen -->
+                                <div class="form-group mb-4">
+                                    <label asp-for="Imagen" class="form-label fw-semibold text-dark mb-2">
+                                        <i class="bi bi-image me-2 text-primary"></i>URL de Imagen
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-link text-muted"></i>
+                                        </span>
+                                        <input asp-for="Imagen" 
+                                               type="url"
+                                               class="form-control border-start-0 ps-2" 
+                                               placeholder="https://ejemplo.com/imagen.jpg" />
+                                    </div>
+                                    <span asp-validation-for="Imagen" class="text-danger small mt-1 d-block"></span>
+                                    <small class="form-text text-muted">Opcional - URL de la imagen del producto</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calculadora de Ganancia (Visual) -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info bg-opacity-10 border-0 rounded-3">
+                                    <div class="row text-center">
+                                        <div class="col-md-4">
+                                            <small class="text-muted d-block">Ganancia por Unidad</small>
+                                            <span class="h6 fw-bold text-success" id="gananciaUnidad">$0.00</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted d-block">Margen de Ganancia</small>
+                                            <span class="h6 fw-bold text-primary" id="margenGanancia">0%</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted d-block">Estado</small>
+                                            <span class="h6 fw-bold text-success" id="estadoPrecios">✓ Precios OK</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="form-group mt-4 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold">
+                                    <i class="bi bi-check-circle me-2"></i>Crear Producto
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #198754, #20c997);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Calculadora de ganancia en tiempo real
+        function calcularGanancia() {
+            const precioCompra = parseFloat(document.getElementById('PrecioCompra').value) || 0;
+            const precioVenta = parseFloat(document.getElementById('PrecioVenta').value) || 0;
+            
+            const ganancia = precioVenta - precioCompra;
+            const margen = precioCompra > 0 ? ((ganancia / precioCompra) * 100) : 0;
+            
+            // Actualizar display
+            document.getElementById('gananciaUnidad').textContent = `$${ganancia.toFixed(2)}`;
+            document.getElementById('margenGanancia').textContent = `${margen.toFixed(1)}%`;
+            
+            // Actualizar estado
+            const estadoElement = document.getElementById('estadoPrecios');
+            if (precioVenta < precioCompra) {
+                estadoElement.textContent = '⚠ Precio bajo';
+                estadoElement.className = 'h6 fw-bold text-danger';
+            } else if (margen > 50) {
+                estadoElement.textContent = '💰 Alto margen';
+                estadoElement.className = 'h6 fw-bold text-success';
+            } else {
+                estadoElement.textContent = '✓ Precios OK';
+                estadoElement.className = 'h6 fw-bold text-success';
+            }
+        }
+
+        // Event listeners para los campos de precio
+        document.getElementById('PrecioCompra').addEventListener('input', calcularGanancia);
+        document.getElementById('PrecioVenta').addEventListener('input', calcularGanancia);
+
+        // Validación personalizada
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.needs-validation');
+            
+            form.addEventListener('submit', function(event) {
+                const precioCompra = parseFloat(document.getElementById('PrecioCompra').value);
+                const precioVenta = parseFloat(document.getElementById('PrecioVenta').value);
+                
+                if (precioVenta < precioCompra) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    alert('⚠ El precio de venta no puede ser menor al precio de compra.');
+                }
+                
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Inicializar cálculo
+        calcularGanancia();
+    </script>
+}

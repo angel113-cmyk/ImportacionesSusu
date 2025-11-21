@@ -1,0 +1,250 @@
+@model IEnumerable<Producto>
+
+@{
+    ViewData["Title"] = "Gestión de Productos";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header con estadísticas -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-box-seam me-2 text-primary"></i>Gestión de Productos
+            </h1>
+            <p class="text-muted">Administra tu inventario de importaciones</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+        </a>
+    </div>
+
+    <!-- Tarjeta de productos -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-white py-3 border-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <i class="bi bi-list-ul me-2 text-primary"></i>Lista de Productos
+                    </h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="input-group input-group-sm" style="max-width: 300px;">
+                        <input type="text" class="form-control border-end-0" placeholder="Buscar producto..." id="searchInput">
+                        <span class="input-group-text bg-transparent border-start-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="productsTable">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="ps-4 fw-semibold">Código</th>
+                            <th class="fw-semibold">Producto</th>
+                            <th class="fw-semibold text-end">Compra</th>
+                            <th class="fw-semibold text-end">Venta</th>
+                            <th class="fw-semibold text-center">Stock</th>
+                            <th class="fw-semibold text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-bottom">
+                                <td class="ps-4">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-medium">@item.Codigo</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="bi bi-box text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@item.Nombre</div>
+                                            <small class="text-muted">ID: @item.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-semibold text-success">@item.PrecioCompra.ToString("C")</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-primary">@item.PrecioVenta.ToString("C")</span>
+                                </td>
+                                <td class="text-center">
+                                    @if (item.Stock <= 5)
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>@item.Stock
+                                        </span>
+                                    }
+                                    else if (item.Stock <= 15)
+                                    {
+                                        <span class="badge bg-warning bg-opacity-10 text-warning">
+                                            <i class="bi bi-info-circle me-1"></i>@item.Stock
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                            <i class="bi bi-check-circle me-1"></i>@item.Stock
+                                        </span>
+                                    }
+                                </td>
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Editar producto">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-info rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                           data-bs-toggle="tooltip" title="Eliminar producto">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer de la tabla -->
+        <div class="card-footer bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>Mostrando <strong>@Model.Count()</strong> productos
+                    </p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary active">1</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de estadísticas rápidas -->
+    <div class="row mt-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-primary border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total Productos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count()</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-success border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Stock Bajo
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                @Model.Count(p => p.Stock <= 5)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.5rem;
+        }
+        
+        .btn-outline-primary:hover {
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .badge {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .border-start {
+            border-left-width: 0.25rem !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#productsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchText) ? '' : 'none';
+            });
+        });
+
+        // Tooltips de Bootstrap
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Efectos hover en las filas
+        const tableRows = document.querySelectorAll('#productsTable tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(-1px)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.transform = '';
+            });
+        });
+    </script>
+}

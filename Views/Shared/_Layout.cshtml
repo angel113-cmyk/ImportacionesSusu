@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ImportacionesSusu</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ImportacionesSusu.styles.css" asp-append-version="true" />
+    
+    <!-- Bootstrap 5 e Iconos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Sección Styles para estilos personalizados de las vistas -->
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* Fondo celeste para toda la página */
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar con gradiente púrpura */
+        .navbar {
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%) !important;
+            box-shadow: 0 4px 15px rgba(142, 36, 170, 0.3);
+        }
+
+        /* Texto del navbar en blanco */
+        .navbar-brand,
+        .nav-link.text-dark,
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-link.text-dark:hover,
+        .navbar-nav .nav-link:hover {
+            color: #e1bee7 !important;
+            transform: translateY(-1px);
+            transition: all 0.3s ease;
+        }
+
+        /* Botón de logout */
+        .btn-outline-danger {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: white;
+            color: #d32f2f;
+            border-color: white;
+        }
+
+        /* Saludo del usuario */
+        .nav-link.text-dark[class*="Hola"] {
+            color: #e1bee7 !important;
+            font-weight: 500;
+        }
+
+        /* Toggler icon en blanco */
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Contenedor principal con fondo semi-transparente */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 25px;
+        }
+
+        /* Footer más discreto */
+        .footer {
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #e3f2fd;
+            color: #5e35b1;
+        }
+
+        /* Efectos hover para las cards */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Botones con colores que combinen */
+        .btn-primary {
+            background: linear-gradient(135deg, #5e35b1, #8e24aa);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa000, #ffb300);
+            border: none;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #29b6f6, #4fc3f7);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53935, #ef5350);
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* Mejorar las tablas */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #5e35b1, #8e24aa);
+            color: white;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            .navbar-collapse {
+                background: rgba(142, 36, 170, 0.95);
+                border-radius: 10px;
+                padding: 15px;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-box-seam me-2"></i>ImportacionesSusu
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <!-- Mostrar Registro y Login solo si NO está autenticado -->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Registro">
+                                    <i class="bi bi-person-plus me-1"></i>Registro
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                                </a>
+                            </li>
+                        }
+                        
+                        <!-- Mostrar Productos solo SI está autenticado -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Producto" asp-action="Index">
+                                    <i class="bi bi-box-seam me-1"></i>Productos
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    
+                    <!-- PARTE DERECHA DEL NAVBAR -->
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <i class="bi bi-person-circle me-1"></i>Hola, @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <!-- FORMULARIO PARA LOGOUT -->
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger btn-sm ms-2">
+                                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - ImportacionesSusu - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <!-- Sección Scripts para scripts personalizados de las vistas -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
