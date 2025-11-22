@@ -18,7 +18,7 @@ if (string.IsNullOrEmpty(connectionString))
     else
     {
         // Fallback para desarrollo
-        connectionString = "Host=localhost;Database=importaciones;Username=postgres;Password=postgres";
+        connectionString = "Host=localhost;Port=5432;Database=importacionesSusu;Username=soporteangel;Password=soporte";
     }
 }
 
@@ -95,4 +95,5 @@ static string ConvertDatabaseUrlToConnectionString(string databaseUrl)
         throw new Exception($"Error parsing DATABASE_URL: {ex.Message}");
     }
 }
+
 
