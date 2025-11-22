@@ -4,25 +4,36 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CONFIGURACIÓN BASE DE DATOS MEJORADA
+// CONFIGURACIÓN BASE DE DATOS - POSTGRESQL SIEMPRE
 string connectionString;
 
-// PRIORIDAD 1: DATABASE_URL de Render (PRODUCCIÓN)
+// PRIORIDAD 1: DATABASE_URL de Render (PRODUCCIÓN - Supabase)
 var renderDatabaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(renderDatabaseUrl))
 {
-    Console.WriteLine("🚀 Usando DATABASE_URL de Render (PRODUCCIÓN)");
+    Console.WriteLine("🚀 PRODUCCIÓN: Conectando a Supabase PostgreSQL");
     connectionString = ConvertDatabaseUrlToConnectionString(renderDatabaseUrl);
 }
-// PRIORIDAD 2: ConnectionString del appsettings (DESARROLLO)
+// PRIORIDAD 2: ConnectionString para desarrollo local
 else 
 {
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    Console.WriteLine("💻 Usando ConnectionString local (DESARROLLO)");
+    var devConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (!string.IsNullOrEmpty(devConnectionString))
+    {
+        Console.WriteLine("💻 DESARROLLO: Usando PostgreSQL local");
+        connectionString = devConnectionString;
+    }
+    else
+    {
+        // Fallback
+        Console.WriteLine("⚠️  Usando PostgreSQL de desarrollo por defecto");
+        connectionString = "Host=localhost;Database=importacionesSusu;Username=postgres;Password=postgres";
+    }
 }
 
-Console.WriteLine($"🔗 Base de datos: {connectionString?.Split(';')[0]}...");
+Console.WriteLine($"🔗 Cadena conexión: {connectionString?.Split(';')[0]}...");
 
+// CONFIGURAR DbContext - SIEMPRE PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
@@ -52,30 +63,20 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Migración automática con mejor manejo de errores
+// Migración automática
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        Console.WriteLine("🔧 Intentando conectar a la base de datos...");
-        
-        // Verificar si podemos conectar primero
-        if (db.Database.CanConnect())
-        {
-            Console.WriteLine("✅ Conexión exitosa, aplicando migraciones...");
-            db.Database.Migrate();
-            Console.WriteLine("✅ Migraciones aplicadas correctamente");
-        }
-        else
-        {
-            Console.WriteLine("❌ No se pudo conectar a la base de datos");
-        }
+        Console.WriteLine("🔧 Aplicando migraciones...");
+        db.Database.Migrate();
+        Console.WriteLine("✅ Migraciones aplicadas correctamente");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"❌ Error en migraciones: {ex.Message}");
-        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}");
+        Console.WriteLine($"🔍 Detalles: {ex.InnerException?.Message}");
     }
 }
 
@@ -92,7 +93,8 @@ app.MapGet("/test-db", async (ApplicationDbContext db) =>
         return Results.Ok(new { 
             status = "success", 
             databaseConnected = canConnect,
-            message = "✅ La aplicación está funcionando"
+            message = "✅ La aplicación está funcionando",
+            databaseType = "PostgreSQL"
         });
     }
     catch (Exception ex)
