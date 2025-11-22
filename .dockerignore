@@ -1,0 +1,14 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/Dockerfile*
+**/.dockerignore
+**/.env
+**/*.user
+**/*.dbmdl
+**/azds.yaml
+README.md
+.gitignore
+.env
