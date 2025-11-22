@@ -18,7 +18,7 @@ if (string.IsNullOrEmpty(connectionString))
     else
     {
         // Fallback local
-        connectionString = "Host=localhost;Database=importaciones;Username=postgres;Password=postgres";
+        connectionString = "Host=localhost;Database=importacionesSusu;Username=soporteangel;Password=soporte";
     }
 }
 
