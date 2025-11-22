@@ -1,0 +1,30 @@
+# Nombre: ".dockerignore" (con el punto al inicio)
+
+# Contenido:
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/azds.yaml
+**/bin
+**/obj
+**/Dockerfile*
+**/Dockerfile
+Dockerfile*
+.dockerignore
+.git
+.gitignore
+README.md
+.env
+.vs
+.vscode
+bin/
+obj/
