@@ -1,31 +1,46 @@
-using System.Diagnostics;
+// Controllers/HomeController.cs
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using ImportacionesSusu.Data;
 using ImportacionesSusu.Models;
 
-namespace ImportacionesSusu.Controllers;
-
-public class HomeController : Controller
+namespace ImportacionesSusu.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    [Authorize(Roles = "Administrador")]
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public async Task<IActionResult> Index()
+        {
+            var dashboard = new DashboardViewModel
+            {
+                TotalProductos = await _context.Productos.CountAsync(),
+                TotalClientes = await _context.Clientes.CountAsync(),
+                ProductosStockBajo = await _context.Productos.CountAsync(p => p.Stock <= 5),
+                ValorTotalInventario = await _context.Productos.SumAsync(p => p.Stock * p.PrecioCompra),
+                ProductosRecientes = await _context.Productos
+                    .OrderByDescending(p => p.FechaRegistro)
+                    .Take(5)
+                    .ToListAsync(),
+                ClientesRecientes = await _context.Clientes
+                    .OrderByDescending(c => c.FechaRegistro)
+                    .Take(5)
+                    .ToListAsync()
+            };
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(dashboard);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
     }
 }

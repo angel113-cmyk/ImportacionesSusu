@@ -1,0 +1,179 @@
+@model Cliente
+
+@{
+    ViewData["Title"] = "Eliminar Cliente";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Eliminar Cliente
+            </h1>
+            <p class="text-muted">Confirmar eliminación permanente del cliente</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Volver a la Lista
+        </a>
+    </div>
+
+    <!-- Alerta de Confirmación -->
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-3 border-danger">
+                <div class="card-header bg-danger bg-gradient text-white py-4 rounded-top-3">
+                    <h5 class="card-title mb-0 fw-semibold text-center">
+                        <i class="bi bi-trash3 me-2"></i>Confirmar Eliminación
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <!-- Icono de advertencia -->
+                    <div class="text-center mb-4">
+                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-exclamation-octagon text-danger fs-1"></i>
+                        </div>
+                        <h4 class="text-danger fw-bold">¿Estás seguro de esta acción?</h4>
+                        <p class="text-muted">Esta acción no se puede deshacer y el cliente será eliminado permanentemente.</p>
+                    </div>
+
+                    <!-- Información del Cliente -->
+                    <div class="alert alert-warning bg-opacity-10 border-warning rounded-3">
+                        <h6 class="fw-semibold mb-3">
+                            <i class="bi bi-info-circle me-2"></i>Cliente a Eliminar:
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <strong class="text-dark">Número:</strong>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary ms-2">@Model.NumeroCliente</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong class="text-dark">Nombre:</strong>
+                                    <div class="text-dark fw-medium">@Model.Nombre</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <strong class="text-dark">Teléfono:</strong>
+                                    <div class="text-dark">
+                                        @if (!string.IsNullOrEmpty(Model.Telefono))
+                                        {
+                                            @Model.Telefono
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No registrado</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <strong class="text-dark">Fecha Registro:</strong>
+                                    <div class="text-muted">@Model.FechaRegistro.ToString("dd/MM/yyyy")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advertencias importantes -->
+                    <div class="alert alert-danger bg-opacity-5 border-danger rounded-3">
+                        <h6 class="fw-semibold text-danger mb-2">
+                            <i class="bi bi-shield-exclamation me-2"></i>Consideraciones importantes:
+                        </h6>
+                        <ul class="small mb-0 text-danger">
+                            <li>Esta acción no se puede deshacer</li>
+                            <li>El cliente será removido permanentemente del sistema</li>
+                            <li>Los registros históricos que referencien este cliente podrían verse afectados</li>
+                        </ul>
+                    </div>
+
+                    <!-- Formulario de Eliminación -->
+                    <form asp-action="Delete" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <!-- Confirmación adicional -->
+                        <div class="form-group mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label text-danger fw-semibold" for="confirmDelete">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Sí, comprendo las consecuencias y deseo eliminar este cliente permanentemente.
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="form-group mt-4 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" 
+                                        class="btn btn-danger btn-lg px-5 fw-semibold" 
+                                        id="deleteButton"
+                                        disabled>
+                                    <i class="bi bi-trash3 me-2"></i>Eliminar Permanentemente
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .border-danger {
+            border-width: 2px !important;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn-danger:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Habilitar botón de eliminación solo cuando se marca el checkbox
+        document.getElementById('confirmDelete').addEventListener('change', function() {
+            document.getElementById('deleteButton').disabled = !this.checked;
+        });
+
+        // Confirmación adicional antes de enviar
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!document.getElementById('confirmDelete').checked) {
+                e.preventDefault();
+                alert('Debes confirmar que comprendes las consecuencias antes de eliminar el cliente.');
+                return;
+            }
+            
+            const confirmed = confirm('⚠️ ¿ESTÁS ABSOLUTAMENTE SEGURO?\n\nEsta acción eliminará permanentemente al cliente "' + '@Model.Nombre' + '".\n\nEsta operación NO se puede deshacer.');
+            
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

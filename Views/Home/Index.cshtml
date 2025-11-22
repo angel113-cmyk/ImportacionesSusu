@@ -1,8 +1,260 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800 fw-bold">
+                <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard
+            </h1>
+            <p class="text-muted">Resumen ejecutivo de ImportacionesSusu</p>
+        </div>
+        <div class="text-end">
+            <small class="text-muted">Última actualización: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row">
+        <!-- Total Productos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-primary border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total Productos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.TotalProductos</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span>En inventario</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Clientes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-success border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Total Clientes
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.TotalClientes</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span>Registrados</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Bajo -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-warning border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                Stock Bajo
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.ProductosStockBajo</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span>Productos críticos</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valor Inventario -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-info border-4 shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                Valor Inventario
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.ValorTotalInventario.ToString("C")</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span>Inversión total</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="row">
+        <!-- Productos Recientes -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <i class="bi bi-clock-history me-2 text-primary"></i>Productos Recientes
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @foreach (var producto in Model.ProductosRecientes)
+                        {
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 40px; height: 40px;">
+                                    <i class="bi bi-box text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark">@producto.Nombre</div>
+                                    <small class="text-muted">Código: @producto.Codigo | Stock: @producto.Stock</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-success">@producto.PrecioVenta.ToString("C")</div>
+                                    <small class="text-muted">@producto.FechaRegistro.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-3">
+                    <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-right me-1"></i>Ver Todos los Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clientes Recientes -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <i class="bi bi-person-plus me-2 text-success"></i>Clientes Recientes
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @foreach (var cliente in Model.ClientesRecientes)
+                        {
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 40px; height: 40px;">
+                                    <i class="bi bi-person text-success"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark">@cliente.Nombre</div>
+                                    <small class="text-muted">N°: @cliente.NumeroCliente</small>
+                                </div>
+                                <div class="text-end">
+                                    @if (!string.IsNullOrEmpty(cliente.Telefono))
+                                    {
+                                        <div class="fw-medium text-dark">@cliente.Telefono</div>
+                                    }
+                                    <small class="text-muted">@cliente.FechaRegistro.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-3">
+                    <a asp-controller="Cliente" asp-action="Index" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-arrow-right me-1"></i>Ver Todos los Clientes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <i class="bi bi-lightning me-2 text-warning"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Producto" asp-action="Create" class="btn btn-primary btn-lg w-100 py-3">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Cliente" asp-action="Create" class="btn btn-success btn-lg w-100 py-3">
+                                <i class="bi bi-person-plus me-2"></i>Nuevo Cliente
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Producto" asp-action="Index" class="btn btn-info btn-lg w-100 py-3">
+                                <i class="bi bi-box-seam me-2"></i>Gestionar Productos
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Cliente" asp-action="Index" class="btn btn-warning btn-lg w-100 py-3">
+                                <i class="bi bi-people me-2"></i>Gestionar Clientes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        .border-start {
+            border-left-width: 0.25rem !important;
+        }
+        
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .list-group-item {
+            border: none;
+            padding: 1rem 1.25rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .fa-2x {
+            font-size: 1.5em;
+        }
+    </style>
+}
