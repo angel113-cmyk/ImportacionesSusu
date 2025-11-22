@@ -4,25 +4,24 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar PostgreSQL para Render
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// CONFIGURACIÓN BASE DE DATOS MEJORADA
+string connectionString;
 
-// Si no hay connection string, usar DATABASE_URL de Render
-if (string.IsNullOrEmpty(connectionString))
+// PRIORIDAD 1: DATABASE_URL de Render (PRODUCCIÓN)
+var renderDatabaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(renderDatabaseUrl))
 {
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    if (!string.IsNullOrEmpty(databaseUrl))
-    {
-        connectionString = ConvertDatabaseUrlToConnectionString(databaseUrl);
-    }
-    else
-    {
-        // Fallback para desarrollo
-        connectionString = "Host=localhost;Port=5432;Database=importacionesSusu;Username=soporteangel;Password=soporte";
-    }
+    Console.WriteLine("🚀 Usando DATABASE_URL de Render (PRODUCCIÓN)");
+    connectionString = ConvertDatabaseUrlToConnectionString(renderDatabaseUrl);
+}
+// PRIORIDAD 2: ConnectionString del appsettings (DESARROLLO)
+else 
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    Console.WriteLine("💻 Usando ConnectionString local (DESARROLLO)");
 }
 
-Console.WriteLine($"🔗 Usando base de datos: {connectionString?.Split(';')[0]}...");
+Console.WriteLine($"🔗 Base de datos: {connectionString?.Split(';')[0]}...");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -40,7 +39,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configuración pipeline PRIMERO
+// Configuración pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -53,20 +52,30 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Migración automática DESPUÉS del middleware
+// Migración automática con mejor manejo de errores
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        Console.WriteLine("🔧 Aplicando migraciones de base de datos...");
-        db.Database.Migrate();
-        Console.WriteLine("✅ Migraciones aplicadas correctamente");
+        Console.WriteLine("🔧 Intentando conectar a la base de datos...");
+        
+        // Verificar si podemos conectar primero
+        if (db.Database.CanConnect())
+        {
+            Console.WriteLine("✅ Conexión exitosa, aplicando migraciones...");
+            db.Database.Migrate();
+            Console.WriteLine("✅ Migraciones aplicadas correctamente");
+        }
+        else
+        {
+            Console.WriteLine("❌ No se pudo conectar a la base de datos");
+        }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"❌ Error en migraciones: {ex.Message}");
-        Console.WriteLine($"🔍 Detalles: {ex.InnerException?.Message}");
+        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}");
     }
 }
 
@@ -74,9 +83,27 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// Endpoint de prueba
+app.MapGet("/test-db", async (ApplicationDbContext db) => 
+{
+    try 
+    {
+        var canConnect = await db.Database.CanConnectAsync();
+        return Results.Ok(new { 
+            status = "success", 
+            databaseConnected = canConnect,
+            message = "✅ La aplicación está funcionando"
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"❌ Error de base de datos: {ex.Message}");
+    }
+});
+
 app.Run();
 
-// Función para convertir DATABASE_URL de Render
+// Función para convertir DATABASE_URL
 static string ConvertDatabaseUrlToConnectionString(string databaseUrl)
 {
     try
@@ -95,5 +122,4 @@ static string ConvertDatabaseUrlToConnectionString(string databaseUrl)
         throw new Exception($"Error parsing DATABASE_URL: {ex.Message}");
     }
 }
-
 
